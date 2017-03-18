@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">AppMisContenidos</string>
+    <string name="titulo">Lambdas</string>
+
+    <string name="etiqueta_numero">Numero: </string>
+    <string name="etiqueta_fecha">Fecha: </string>
+    <string name="etiqueta_tipo">Tipo: </string>
+    <string name="etiqueta_duracion">Duracion: </string>
+    <string name="etiqueta_geoCode">GeoCode: </string>
+    <string name="etiqueta_llamada">Llamada: </string>
+    <string name="segundos">seg</string>
+
+    <string name="entrada">Entrada</string>
+    <string name="salida">Salida</string>
+    <string name="perdida">Perdida</string>
+    <string name="conectando">Conectando</string>
+    <string name="undefined">NoDefinido</string>
+
+    <string name="descripcion_contenidos">Uso de Content Providers</string>
+
+</resources>

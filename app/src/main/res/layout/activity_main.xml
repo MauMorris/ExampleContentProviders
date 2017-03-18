@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_vertical_margin"
+    tools:context="com.example.mauriciogodinez.appmiscontenidos.MainActivity">
+<!-- TV con el titulo de la App-->
+    <TextView
+        android:id="@+id/tvTitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/titulo"
+        android:textSize="@dimen/texto_titulo" />
+<!--Creamos un ScrollView porque el TV almacenara los datos-->
+    <ScrollView
+        android:id="@+id/svDatos"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<!--TV con todos los datos -->
+        <TextView
+            android:id="@+id/tvLlamadas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/titulo" />
+    </ScrollView>
+</LinearLayout>
