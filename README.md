@@ -1,12 +1,10 @@
 # Content Providers 
 Ejemplo de Hilos (Handler) para una animacón y consulta al Proveedor de Contenidos (CallLog) acerca del historial de llamadas 
-incluyendo un dialogo de petición de permisos para la Aplicación.
+incluyendo un dialogo de petición de permisos (API >= 23) para la Aplicación.
 ## Motivacion
-Utilizacion de Handlers para crear una pequeña animacion similar a los controles para manipular LAYOUT_FULLSCREEN y FLAG_LAYOUT_HIDE_NAVIGATION 
-creando un dialogo de adquisición de permisos del manifiesto 'PackageManager.PERMISSION_GRANTED'y 
-la utilizacion de Content Providers para consultar información y almacenarlos en un 'Cursor' (Matriz tipo consulta a base de datos)
+Utilizacion de Handlers para crear una pequeña animacion similar a los controles para manipular LAYOUT_FULLSCREEN y FLAG_LAYOUT_HIDE_NAVIGATION, un dialogo de adquisición de permisos del manifiesto 'PackageManager.PERMISSION_GRANTED'(para MarshMallow y API's posteriores) además de la utilización de Content Providers para consultar información, almacenarlos en un 'Cursor' (Matriz tipo consulta a base de datos) y mostrarlos en un TextView.
 ## Instalacion
-Al momento de correr la aplicación se requiere dar permios de Contacto y Llamadas.
+Al momento de correr la aplicación si tienes API >= 23 (MarshMallow o posteriores) se requiere dar permios de Contacto y Llamadas.
 ## Capturas
 *Funcionamiento de la aplicacion*.
 ## Contribuciones
