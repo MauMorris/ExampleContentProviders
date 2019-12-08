@@ -1,19 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Usamos un FrameLayout porque solo tenemos un View en esta Activity -->
+<?xml version="1.0" encoding="utf-8"?><!-- Usamos un FrameLayout porque solo tenemos un View en esta Activity -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fullscreen_activity_portada"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fullscreen_activity_portada"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.mauriciogodinez.appmiscontenidos.PortadaActivity">
-<!-- Primer Activity para presentacion de la App -->
+    <!-- Primer Activity para presentacion de la App -->
     <TextView
         android:id="@+id/iv_zigbee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:contentDescription="@string/descripcion_contenidos"
         android:keepScreenOn="true"
         android:text="@string/descripcion_contenidos"
-        android:textSize="@dimen/texto_titulo"
-        android:contentDescription="@string/descripcion_contenidos" />
+        android:textSize="@dimen/texto_titulo" />
 </FrameLayout>
