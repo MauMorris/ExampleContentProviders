@@ -1,5 +1,11 @@
 package com.example.mauriciogodinez.appmiscontenidos;
 
+import android.annotation.SuppressLint;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.annotation.TargetApi;
@@ -8,16 +14,18 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.CallLog;
 import android.telecom.Call;
-import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String TAG = "ContentPLlamadas";
-
+    private static final int ID_CALLLOG_LOADER = 123;
     //Creamos la URI del ContentProvider que utilizaremos
     private Uri uriLlamada = CallLog.Calls.CONTENT_URI;
 
@@ -32,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Es el TextView que guardará todos los datos que obtengamos de la consulta.
     private TextView tvLlamadas;
+    private ProgressBar mloadingIndicator;
 
     @TargetApi(Build.VERSION_CODES.M)
 
@@ -40,81 +49,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvLlamadas = findViewById(R.id.tvLlamadas);
-        tvLlamadas.setText("");
-    }
+        tvLlamadas = findViewById(R.id.llamadas_text_view);
+        mloadingIndicator = findViewById(R.id.loading_indicator_progressbar);
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        tvLlamadas = findViewById(R.id.tvLlamadas);
-
-        try {
-            //Indicamos los Index para las columnas que nos regresará nuestro cursor
-            // al consultar el ContentProvider.
-            int numero_index, fecha_index, tipo_index, duracion_index, geocode_index;
-
-            //Aqui almacenamos los valores que regrese la consulta del ContentProvider.
-            String numero;
-            long fecha;
-            int tipo;
-            String duracion, geocode, tipoLlamada;
-
-            //Consultamos con la URI especificada para que los regrese
-            // ordenados DESC con ref Calls.DATE
-            Cursor registros = getContentResolver().query(uriLlamada, colContentResolver, null, null,
-                    CallLog.Calls.DATE + " DESC");
-
-            //Creamos el Formatter para obtener una fecha legible
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yy HH:mm");
-
-            //Con la matriz del cursor, hacemos un recorrido
-            // para que regrese los datos indicados
-            if (registros != null) {
-                while (registros.moveToNext()) {
-                    //Obtengo los indices de las columnas
-                    numero_index = registros.getColumnIndex(colContentResolver[0]);
-                    fecha_index = registros.getColumnIndex(colContentResolver[1]);
-                    tipo_index = registros.getColumnIndex(colContentResolver[2]);
-                    duracion_index = registros.getColumnIndex(colContentResolver[3]);
-                    geocode_index = registros.getColumnIndex(colContentResolver[4]);
-
-                    //Obtengo los datos a partir de los indices
-                    numero = registros.getString(numero_index);
-                    fecha = registros.getLong(fecha_index);//Epoch UNIX
-                    tipo = registros.getInt(tipo_index);
-                    duracion = registros.getString(duracion_index);
-                    geocode = registros.getString(geocode_index);
-
-                    //Validando tipo de llamada
-                    tipoLlamada = returnTipoLlamada(tipo);
-
-                    //Creamos un string para concatenar los datos y agregarlos al TextView
-                    String detalle = getResources().getString(R.string.etiqueta_numero) + numero + "\n"
-                            + getResources().getString(R.string.etiqueta_fecha) + formatter.format(new Date(fecha)) + "\n"
-                            + getResources().getString(R.string.etiqueta_tipo) + tipo + "\n"
-                            + getResources().getString(R.string.etiqueta_duracion) + duracion + getResources().getString(R.string.segundos) + "\n"
-                            + getResources().getString(R.string.etiqueta_geoCode) + geocode + "\n"
-                            + getResources().getString(R.string.etiqueta_llamada) + tipoLlamada + "\n\n";
-
-                    //Agregamos el string al TextView y continuamos con el bucle
-                    tvLlamadas.append(detalle);
-                }
-                //liberamos la memoria del cursor
-                registros.close();
-            }
-        } catch (Exception e) {
-            Log.v(TAG, e.getMessage());
-        }
+        getSupportLoaderManager().initLoader(ID_CALLLOG_LOADER, null, this);
     }
 
     /**
      * Método que valida el tipo de llamada que regresa el ContentProvider y asigna
      * el string correspondiente (entrada, perdida, salida, conectando, no definida)
+     *
      * @param tipo registro CallLog.Calls.TYPE proporcionado por el ContentProvider
      * @return string asignado al tipo
      */
-    private String returnTipoLlamada(int tipo){
+    private String returnTipoLlamada(int tipo) {
         switch (tipo) {
             case CallLog.Calls.INCOMING_TYPE:
                 return getResources().getString(R.string.entrada);
@@ -127,5 +75,75 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return getResources().getString(R.string.undefined);
         }
+    }
+
+    private void setData(Cursor registros) {
+        //Creamos el Formatter para obtener una fecha legible
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yy HH:mm", Locale.ENGLISH);
+
+        //Con la matriz del cursor, hacemos un recorrido para que regrese los datos indicados
+        if (registros != null) {
+            while (registros.moveToNext()) {
+                //Obtengo los datos a partir de los indices
+                String numero = registros.getString(registros.getColumnIndex(colContentResolver[0]));
+                //Epoch UNIX
+                long fecha = registros.getLong(registros.getColumnIndex(colContentResolver[1]));
+                int tipo = registros.getInt(registros.getColumnIndex(colContentResolver[2]));
+                String duracion = registros.getString(registros.getColumnIndex(colContentResolver[3]));
+                String geocode = registros.getString(registros.getColumnIndex(colContentResolver[4]));
+
+                //Validando tipo de llamada
+                String tipoLlamada = returnTipoLlamada(tipo);
+
+                //Creamos un string para concatenar los datos y agregarlos al TextView
+                String detalle = getResources().getString(R.string.etiqueta_numero) + numero + "\n"
+                        + getResources().getString(R.string.etiqueta_fecha) + formatter.format(new Date(fecha)) + "\n"
+                        + getResources().getString(R.string.etiqueta_tipo) + tipo + "\n"
+                        + getResources().getString(R.string.etiqueta_duracion) + duracion + getResources().getString(R.string.segundos) + "\n"
+                        + getResources().getString(R.string.etiqueta_geoCode) + geocode + "\n"
+                        + getResources().getString(R.string.etiqueta_llamada) + tipoLlamada + "\n\n";
+
+                //Agregamos el string al TextView y continuamos con el bucle
+                tvLlamadas.append(detalle);
+            }
+            //liberamos la memoria del cursor
+            registros.close();
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, @Nullable Bundle loaderArgs) {
+
+        return new AsyncTaskLoader<Cursor>(this) {
+            @Override
+            protected void onStartLoading() {
+                tvLlamadas.setText("");
+                mloadingIndicator.setVisibility(View.VISIBLE);
+                forceLoad();
+            }
+
+            @Nullable
+            @Override
+            public Cursor loadInBackground() {
+                return getContentResolver().query(
+                        uriLlamada,
+                        colContentResolver,
+                        null,
+                        null,
+                        CallLog.Calls.DATE + " DESC");
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
+        mloadingIndicator.setVisibility(View.INVISIBLE);
+        setData(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
     }
 }
