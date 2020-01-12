@@ -1,6 +1,7 @@
 package com.example.mauriciogodinez.appmiscontenidos;
 
 import android.annotation.SuppressLint;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -17,6 +18,8 @@ import android.telecom.Call;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.example.mauriciogodinez.appmiscontenidos.databinding.ActivityMainBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,9 +41,7 @@ public class MainActivity extends AppCompatActivity implements
             CallLog.Calls.GEOCODED_LOCATION,
     };
 
-    //Es el TextView que guardará todos los datos que obtengamos de la consulta.
-    private TextView tvLlamadas;
-    private ProgressBar mloadingIndicator;
+    private ActivityMainBinding mMainBinding;
 
     @TargetApi(Build.VERSION_CODES.M)
 
@@ -49,8 +50,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvLlamadas = findViewById(R.id.llamadas_text_view);
-        mloadingIndicator = findViewById(R.id.loading_indicator_progressbar);
+        mMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         getSupportLoaderManager().initLoader(ID_CALLLOG_LOADER, null, this);
     }
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements
                         + getResources().getString(R.string.etiqueta_llamada) + tipoLlamada + "\n\n";
 
                 //Agregamos el string al TextView y continuamos con el bucle
-                tvLlamadas.append(detalle);
+                mMainBinding.llamadasTextView.append(detalle);
             }
             //liberamos la memoria del cursor
             registros.close();
@@ -119,8 +119,8 @@ public class MainActivity extends AppCompatActivity implements
         return new AsyncTaskLoader<Cursor>(this) {
             @Override
             protected void onStartLoading() {
-                tvLlamadas.setText("");
-                mloadingIndicator.setVisibility(View.VISIBLE);
+                mMainBinding.llamadasTextView.setText("");
+               mMainBinding.loadingIndicatorProgressbar.setVisibility(View.VISIBLE);
                 forceLoad();
             }
 
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        mloadingIndicator.setVisibility(View.INVISIBLE);
+        mMainBinding.loadingIndicatorProgressbar.setVisibility(View.INVISIBLE);
         setData(cursor);
     }
 
